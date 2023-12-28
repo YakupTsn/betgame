@@ -1,0 +1,86 @@
+package com.spottoto.bet.betround.concretes;
+
+import com.spottoto.bet.betround.abstracts.GameAbstract;
+import com.spottoto.bet.betround.concretes.requests.concretes.FootballGameRequest;
+import com.spottoto.bet.betround.enums.Score;
+import com.spottoto.bet.exceptions.RestException;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Data
+public class FootballGame extends GameAbstract {
+    private String serverId;
+    private String id = UUID.randomUUID().toString();
+    private String firstTeamName;
+    private String secondTeamName;
+    private Boolean isSuccess;
+    private Score score;
+
+    public List<FootballGame> createList(List<FootballGameRequest> gameList) {
+        List<FootballGame> footballGameList = new ArrayList<>();
+        for (FootballGameRequest footballGameRequest : gameList) {
+            FootballGame footballGame = new FootballGame();
+            footballGame.setServerId(footballGameRequest.getServerId());
+            footballGame.setFirstTeamName(footballGameRequest.getFirstTeamName());
+            footballGame.setSecondTeamName(footballGameRequest.getSecondTeamName());
+            footballGame.setScore(footballGameRequest.getScore());
+            footballGame.setIsSuccess(footballGameRequest.getIsSuccess());
+            footballGame.setPlayDate(footballGameRequest.getPlayDate());
+            footballGame.validate();
+            footballGameList.add(footballGame);
+        }
+        return footballGameList;
+    }
+
+    public List<FootballGame> updateList(List<Score> scoreList, List<FootballGame> gameList) {
+        for (FootballGame footballGame : gameList) {
+            for (Score score : scoreList) {
+                footballGame.setScore(score);
+            }
+        }
+        return gameList;
+    }
+
+    public List<FootballGame> updateListIsSuccess(List<FootballGame> betroundGameList, List<FootballGame> userBetRoundGameList) {
+        for (FootballGame footballGameUserBetRound : userBetRoundGameList) {
+            for (FootballGame footballGameBetRound : betroundGameList) {
+                if (footballGameBetRound.getId().equals(footballGameUserBetRound.getServerId())) {
+                    if (footballGameBetRound.getScore().equals(footballGameUserBetRound.getScore())) {
+                        footballGameUserBetRound.setIsSuccess(true);
+                    } else {
+                        footballGameUserBetRound.setIsSuccess(false);
+                    }
+                }
+            }
+        }
+        return userBetRoundGameList;
+    }
+
+    @Override
+    protected void validate() {
+        checkPlayDate();
+        checkTeams();
+    }
+
+
+    private void checkTeams() {
+        if (this.getFirstTeamName().isEmpty() || this.getSecondTeamName().isEmpty())
+            throw new RestException("Any team cannot be left vacant.");
+    }
+
+    private void checkPlayDate() {
+        if (this.playDate.isBefore(LocalDateTime.now()))
+            throw new RestException("A bet from a previous date cannot be added.");
+    }
+
+    @Override
+    protected Boolean isSuccess() {
+        return isSuccess;
+    }
+
+
+}
