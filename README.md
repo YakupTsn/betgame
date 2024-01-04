@@ -80,4 +80,5 @@ OnlyAdmin bir istektir sadece adminlere açık.
 ->method adı:  <p>  getAllUserBets(Pageable pageable) </p>
 login olan kullanıcının kuponlarını getirir.
 IsAuthentificated bir istektir, login olan herkese açık.
+
     
