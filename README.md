@@ -7,25 +7,28 @@ başarılı yada başarısız olarak kullanıcı mail adresine sonucu atmak ve d
     Projemizde 3 controller bulunuyor;
 # AccountController
     /account/register 
--> register(@RequestBody RegisterRequest request)
+->method adı:  <p> register(@RequestBody RegisterRequest request) </p>
 isteğimiz apimize kullanıcı kaydı oluşturmamızı sağlar.
 permitall bir istektir,herkese açık.    
-   /account/login
--> login(@RequestBody @Valid LoginRequest request)
+   
+     /account/login
+->method adı:  <p>  login(@RequestBody @Valid LoginRequest request) </p>
 apimize login ve token kontrolü sağlar.
 permitall bir istektir,herkese açık.  
+    
     /account/me
-->  getMe()
+->method adı:  <p>  getMe() </p>
 giriş yapan kullanıcıların bilgilerini getirir.
 IsAuthentificated bir istektir, login olan herkese açık.
+    
     /account/forgotpassword
--> putPassword(@RequestParam String mail)
+->method adı:  <p> putPassword(@RequestParam String mail) </p>
 mail adresi girilen kullanıcıya rastgele bir parola üretip database de
 günceller ve kullanıcıya yeni parolasını mail olarak gönderir.
 permitall bir istektir,herkese açık.
 # BetRoundController
     /betround/save/server
-->  saveBetRound(@RequestBody BetRoundRequest betRoundRequest)
+->method adı:  <p>  saveBetRound(@RequestBody BetRoundRequest betRoundRequest)  </p>
 -admin login olduysa bülten ekleme yapar database de bet 
 rolü SERVER  olur, oyun listesi ve bülten adı gibi istekde yer 
 alan bilgileri işaretler ,bülten oluştururken maç sonucu giremez ve bülteni oluşturur.
@@ -36,13 +39,13 @@ hemde kullanıcı için kupon oluşturmamıza yarar.
 IsAuthentificated bir istektir, login olan herkese açık.
     
     /bedround
--> saveGameResult(@RequestBody GameResult gameResult)
+->method adı:  <p>  saveGameResult(@RequestBody GameResult gameResult) </p>
 bu patchmapping işleminde bültenimizi oluştururken boş bıraktığımız yani
 maç sonuçlarımızı girmemize ,update etmemizi sağlar.
 OnlyAdmin bir istektir sadece adminlere açık.
 
     /betround/update/server
-->  saveBetRoundIsSuccessAndSendMail(@RequestParam Long betRoundId)
+->method adı:  <p>  saveBetRoundIsSuccessAndSendMail(@RequestParam Long betRoundId) </p>
 verilen betRoundID ile betRound u bulur ve bu betRound üzerinden
 serverBetRoundId leri aynı olan betRoundları betRole ü
 user olanları(kuponları) getirir,daha sonra bu kuponları betround daki
@@ -52,7 +55,7 @@ onların mail adreslerine sonuçları gönderir.
 OnlyAdmin bir istektir sadece adminlere açık.
 
     /betround
-->  getAllBetRounds(@Nullable @RequestParam PlayableStatus playableStatus, Pageable pageable)
+->method adı:  <p>  getAllBetRounds(@Nullable @RequestParam PlayableStatus playableStatus, Pageable pageable) </p>
 verilen statüye göre bültenleri listeleme yapar,
 eğer PlayableStatus boş geçilirse bütün bültenleri getirir.
 IsAuthentificated bir istektir, login olan herkese açık.
@@ -60,21 +63,21 @@ IsAuthentificated bir istektir, login olan herkese açık.
 
 #   UserController
     /users/change/password
--> changePassword(@RequestParam String newPassword)
+->method adı:  <p>  changePassword(@RequestParam String newPassword) </p>
 apiye giriş yapan kullanıcının şifresini günceller.
 IsAuthentificated bir istektir, login olan herkese açık.
 
     /users/changedrole
--> changedRole(@RequestParam String userId, @RequestParam UserRole userRole)
+->method adı:  <p> changedRole(@RequestParam String userId, @RequestParam UserRole userRole) </p>
 id si ve değişecek rolü verilen kullanıcının rolünü günceller.
 OnlyAdmin bir istektir sadece adminlere açık.
     /users
-->getAllUsers(Pageable pageable)
+->method adı:  <p> getAllUsers(Pageable pageable) </p>
 kayıtlı tüm kullanıcıları getirir.
 OnlyAdmin bir istektir sadece adminlere açık.
 
     /users/betrounds
--> getAllUserBets(Pageable pageable)
+->method adı:  <p>  getAllUserBets(Pageable pageable) </p>
 login olan kullanıcının kuponlarını getirir.
 IsAuthentificated bir istektir, login olan herkese açık.
     
