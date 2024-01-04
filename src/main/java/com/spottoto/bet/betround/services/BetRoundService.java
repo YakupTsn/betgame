@@ -35,10 +35,12 @@ public class BetRoundService {
 
     public void saveBetRound(BetRoundRequest betRoundRequest) {
         User user = securityContextUtil.getCurrentUser();
+        betRoundRequest.checkBetRoundListSize();
         checkServerBetRound(betRoundRequest);
         BetRound betRound = new BetRound().create(user, betRoundRequest);
         betRoundRepository.save(betRound);
     }
+
 
     private void checkServerBetRound(BetRoundRequest betRoundRequest) {
         if (betRoundRequest.getBetRole().equals(BetRole.USER)) {

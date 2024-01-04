@@ -2,7 +2,9 @@ package com.spottoto.bet.betround.concretes;
 
 import com.spottoto.bet.betround.abstracts.GameAbstract;
 import com.spottoto.bet.betround.concretes.requests.concretes.FootballGameRequest;
+import com.spottoto.bet.betround.enums.BetRole;
 import com.spottoto.bet.betround.enums.Score;
+import com.spottoto.bet.exceptions.NotFoundException;
 import com.spottoto.bet.exceptions.RestException;
 import lombok.Data;
 
@@ -20,7 +22,7 @@ public class FootballGame extends GameAbstract {
     private Boolean isSuccess;
     private Score score;
 
-    public List<FootballGame> createList(List<FootballGameRequest> gameList) {
+    public List<FootballGame> createList(List<FootballGameRequest> gameList, BetRole betRole) {
         List<FootballGame> footballGameList = new ArrayList<>();
         for (FootballGameRequest footballGameRequest : gameList) {
             FootballGame footballGame = new FootballGame();
@@ -30,7 +32,7 @@ public class FootballGame extends GameAbstract {
             footballGame.setScore(footballGameRequest.getScore());
             footballGame.setIsSuccess(footballGameRequest.getIsSuccess());
             footballGame.setPlayDate(footballGameRequest.getPlayDate());
-            footballGame.validate();
+            footballGame.validate(betRole);
             footballGameList.add(footballGame);
         }
         return footballGameList;
@@ -48,22 +50,36 @@ public class FootballGame extends GameAbstract {
     public List<FootballGame> updateListIsSuccess(List<FootballGame> betroundGameList, List<FootballGame> userBetRoundGameList) {
         for (FootballGame footballGameUserBetRound : userBetRoundGameList) {
             for (FootballGame footballGameBetRound : betroundGameList) {
-                if (footballGameBetRound.getId().equals(footballGameUserBetRound.getServerId())) {
-                    if (footballGameBetRound.getScore().equals(footballGameUserBetRound.getScore())) {
-                        footballGameUserBetRound.setIsSuccess(true);
-                    } else {
-                        footballGameUserBetRound.setIsSuccess(false);
-                    }
-                }
+                checkGameSummary(footballGameBetRound, footballGameUserBetRound );
             }
         }
         return userBetRoundGameList;
     }
 
-    @Override
-    protected void validate() {
-        checkPlayDate();
-        checkTeams();
+    private void checkGameSummary(FootballGame serverGame, FootballGame userGame) {
+            if (serverGame.getId().equals(userGame.getServerId())) {
+                if (serverGame.getScore().equals(userGame.getScore())) {
+                    userGame.setIsSuccess(true);
+                } else {
+                    userGame.setIsSuccess(false);
+                }
+            }
+        }
+
+
+@Override
+protected void validate(BetRole betRole) {
+    checkPlayDate();
+    checkTeams();
+    if(betRole.equals(BetRole.USER)) {
+        checkGameServerId();
+    }
+}
+
+    private void checkGameServerId() {
+        if(this.serverId.isEmpty()){
+            throw new NotFoundException("The bet to be placed is not registered in the system");
+        }
     }
 
 

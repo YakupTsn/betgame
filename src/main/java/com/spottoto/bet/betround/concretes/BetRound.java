@@ -39,7 +39,7 @@ public class BetRound implements Playable {
     @Column
     @Enumerated(EnumType.STRING)
     private BetStatus betStatus = BetStatus.WAITING;
-    @Column
+    @Column(length = 1000000)
     @Type(JsonBlobType.class)
     private List<FootballGame> gameList;
 
@@ -82,7 +82,7 @@ public class BetRound implements Playable {
         betRound.playableStatus = PlayableStatus.PLANNED;
         betRound.title = betRoundRequest.getTitle();
         betRound.ownerId = user.getId();
-        betRound.gameList = new FootballGame().createList(betRoundRequest.getGameList());
+        betRound.gameList = new FootballGame().createList(betRoundRequest.getGameList(),  betRoundRequest.getBetRole());
         betRound.serverBetRoundId = setServer(betRoundRequest);
         return betRound;
     }
@@ -118,6 +118,8 @@ public class BetRound implements Playable {
         if (betRole.equals(BetRole.SERVER) && gameList.stream().anyMatch(game -> game.getScore() != null)) {
             throw new RestException("Bets cannot be settled with results.");
         } else if (betRole.equals(BetRole.USER) && gameList.stream().anyMatch(game -> game.getScore() == null)) {
+            //todo burada user ın gamelistteki serverıd si bültendeki game  ıd de karşılığı var mı
+
             throw new RestException("Bets cannot be left empty");
         }
     }
