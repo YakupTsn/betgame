@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
                         url = ""
                 ),
                 description = "SuperToto play platform",
-                title = "",
+                title = "Super Toto",
                 version = "1.0",
                 license = @License(
                         name = "",

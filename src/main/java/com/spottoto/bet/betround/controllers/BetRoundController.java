@@ -36,7 +36,7 @@ public class BetRoundController {
                     @ApiResponse(description = "Entity Not Found", responseCode = "404", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
             }
     )
-    @PostMapping("/save/server")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void saveBetRound(@RequestBody BetRoundRequest betRoundRequest) {
         betRoundService.saveBetRound(betRoundRequest);
@@ -72,7 +72,7 @@ public class BetRoundController {
                     @ApiResponse(description = "Entity Not Found", responseCode = "404", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
             }
     )
-    @PatchMapping("/update/server")
+    @PatchMapping("/finalizes")
     @ResponseStatus(HttpStatus.OK)
     public void saveBetRoundIsSuccessAndSendMail(@RequestParam Long betRoundId) {
         betRoundService.saveBetRoundIsSuccessAndSendMail(betRoundId);
