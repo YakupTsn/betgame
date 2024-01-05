@@ -1,11 +1,11 @@
 package com.spottoto.bet.betround.concretes;
 
-import com.spottoto.bet.betround.concretes.requests.GameResult;
 import com.spottoto.bet.betround.concretes.requests.concretes.BetRoundRequest;
 import com.spottoto.bet.betround.concretes.requests.concretes.FootballGameRequest;
 import com.spottoto.bet.betround.enums.BetRole;
 import com.spottoto.bet.betround.enums.BetStatus;
 import com.spottoto.bet.betround.enums.PlayableStatus;
+import com.spottoto.bet.betround.enums.Score;
 import com.spottoto.bet.betround.interfaces.Playable;
 import com.spottoto.bet.exceptions.RestException;
 import com.spottoto.bet.user.entity.User;
@@ -44,9 +44,6 @@ public class BetRound implements Playable {
     private List<FootballGame> gameList;
 
 
-    public BetRole validateRole() {
-        return this.betRole;
-    }
 
     public void checkGamesDatesToChangePlayableStatus(PlayableStatus playableStatus) {
         Boolean isInvalidGameDate = gameList.stream().anyMatch(game -> game.getPlayDate().isAfter(LocalDateTime.now()));
@@ -82,15 +79,15 @@ public class BetRound implements Playable {
         betRound.playableStatus = PlayableStatus.PLANNED;
         betRound.title = betRoundRequest.getTitle();
         betRound.ownerId = user.getId();
-        betRound.gameList = new FootballGame().createList(betRoundRequest.getGameList(),  betRoundRequest.getBetRole());
+        betRound.gameList = new FootballGame().createList(betRoundRequest.getGameList(), betRoundRequest.getBetRole());
         betRound.serverBetRoundId = setServer(betRoundRequest);
         return betRound;
     }
 
-    public BetRound update(GameResult gameResult) {
+    public BetRound update(Score score, String gameId) {
         playableStatus = PlayableStatus.ENDED;
         checkGamesDatesToChangePlayableStatus(playableStatus);
-        gameList = new FootballGame().updateList(gameResult.getScoreList(), gameList);
+        gameList = new FootballGame().updateList(score, gameId, gameList);
         return this;
     }
 
@@ -118,8 +115,6 @@ public class BetRound implements Playable {
         if (betRole.equals(BetRole.SERVER) && gameList.stream().anyMatch(game -> game.getScore() != null)) {
             throw new RestException("Bets cannot be settled with results.");
         } else if (betRole.equals(BetRole.USER) && gameList.stream().anyMatch(game -> game.getScore() == null)) {
-            //todo burada user ın gamelistteki serverıd si bültendeki game  ıd de karşılığı var mı
-
             throw new RestException("Bets cannot be left empty");
         }
     }
@@ -129,7 +124,6 @@ public class BetRound implements Playable {
             throw new RestException("Wrong BetRole");
         }
     }
-
 
     public void updateBetStatus() {
         if (betRole.equals(BetRole.SERVER))
@@ -142,7 +136,6 @@ public class BetRound implements Playable {
             betStatus = BetStatus.SUCCESS;
             this.isSuccess();
         }
-
 
     }
 }

@@ -4,6 +4,7 @@ import com.spottoto.bet.account.controller.request.RegisterRequest;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 
 @Entity

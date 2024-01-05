@@ -1,7 +1,5 @@
 package com.spottoto.bet.betround.concretes.requests.concretes;
 
-import com.spottoto.bet.betround.concretes.BetRound;
-import com.spottoto.bet.betround.concretes.FootballGame;
 import com.spottoto.bet.betround.concretes.requests.PlayableRequest;
 import com.spottoto.bet.betround.enums.BetRole;
 import com.spottoto.bet.exceptions.GeneralException;

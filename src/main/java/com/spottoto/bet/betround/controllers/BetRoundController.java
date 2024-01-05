@@ -1,9 +1,9 @@
 package com.spottoto.bet.betround.controllers;
 
 import com.spottoto.bet.betround.concretes.BetRoundDto;
-import com.spottoto.bet.betround.concretes.requests.GameResult;
 import com.spottoto.bet.betround.concretes.requests.concretes.BetRoundRequest;
 import com.spottoto.bet.betround.enums.PlayableStatus;
+import com.spottoto.bet.betround.enums.Score;
 import com.spottoto.bet.betround.services.BetRoundService;
 import com.spottoto.bet.exceptions.ErrorResponse;
 import com.spottoto.bet.security.annotations.IsAuthentificated;
@@ -55,8 +55,10 @@ public class BetRoundController {
     )
     @PatchMapping
     @ResponseStatus(HttpStatus.OK)
-    public void saveGameResult(@RequestBody GameResult gameResult) {
-        betRoundService.saveGameResult(gameResult);
+    public void saveGameResult(@RequestParam Score score,
+                               @RequestParam Long serverBetRoundId,
+                               @RequestParam String gameId) {
+        betRoundService.saveGameResult(serverBetRoundId, gameId, score);
     }
 
     @OnlyAdmin

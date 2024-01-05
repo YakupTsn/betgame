@@ -2,10 +2,10 @@ package com.spottoto.bet.betround.services;
 
 import com.spottoto.bet.betround.concretes.BetRound;
 import com.spottoto.bet.betround.concretes.BetRoundDto;
-import com.spottoto.bet.betround.concretes.requests.GameResult;
 import com.spottoto.bet.betround.concretes.requests.concretes.BetRoundRequest;
 import com.spottoto.bet.betround.enums.BetRole;
 import com.spottoto.bet.betround.enums.PlayableStatus;
+import com.spottoto.bet.betround.enums.Score;
 import com.spottoto.bet.betround.repositories.BetRoundRepository;
 import com.spottoto.bet.exceptions.NotFoundException;
 import com.spottoto.bet.exceptions.RestException;
@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,30 +44,31 @@ public class BetRoundService {
 
 
     private void checkServerBetRound(BetRoundRequest betRoundRequest) {
+        List<BetRound> betRound = betRoundRepository.findByServerBetRoundIdAndBetRole(betRoundRequest.getServerBetRoundId(), BetRole.SERVER);
         if (betRoundRequest.getBetRole().equals(BetRole.USER)) {
-            List<BetRound> betRound = betRoundRepository.findByServerBetRoundIdAndBetRole(betRoundRequest.getServerBetRoundId(), BetRole.SERVER);
             if (betRound.isEmpty())
                 throw new RestException("The bet to be placed is not registered in the system");
             if (betRound.get(0).getPlayableStatus().equals(PlayableStatus.ENDED))
                 throw new RestException("Bets Are Off");
+        }else {
+            findByBetRoundServer(betRound, betRoundRequest.getServerBetRoundId());
         }
     }
-
-    private BetRound findServerBetRoundByGameResult(GameResult gameResult) {
-        List<BetRound> betRound = betRoundRepository.findByServerBetRoundIdAndBetRole(gameResult.getServerBetRoundId(), BetRole.SERVER);
+    private void findByBetRoundServer(List<BetRound> betRound, Long serverBetRoundId){
+       Optional<BetRound> betRoundOptional = betRound.stream().filter(cupon -> cupon.getServerBetRoundId().equals(serverBetRoundId)).findFirst();
+        if(!betRoundOptional.isEmpty()){
+            throw new RestException(serverBetRoundId+" bet round server available");
+        }
+    }
+    private BetRound findOneBetRoundByServerBetRoundId(Long serverBetRoundId) {
+        List<BetRound> betRound = betRoundRepository.findByServerBetRoundIdAndBetRole(serverBetRoundId, BetRole.SERVER);
         if (betRound.isEmpty())
-            throw new NotFoundException(gameResult.getServerBetRoundId() + " Bet round is not found");
+            throw new NotFoundException("Bet round id : "+ serverBetRoundId + " is not found");
         return betRound.get(0);
     }
 
     private List<BetRound> findBetRoundsByServerBetRoundId(Long serverBetRoundId) {
         return betRoundRepository.findByServerBetRoundIdAndBetRole(serverBetRoundId, BetRole.USER);
-    }
-
-    public void saveGameResult(GameResult gameResult) {
-        BetRound betRound = findServerBetRoundByGameResult(gameResult);
-        betRound.update(gameResult);
-        betRoundRepository.save(betRound);
     }
 
     public void saveBetRoundIsSuccessAndSendMail(Long betRoundId) {
@@ -118,4 +120,11 @@ public class BetRoundService {
     public Page<BetRound> findByUserBets(String id, Pageable pageable) {
         return betRoundRepository.findByOwnerId(id, pageable);
     }
+
+    public void saveGameResult(Long serverBetRoundId, String gameId, Score score) {
+        BetRound betRound = findOneBetRoundByServerBetRoundId(serverBetRoundId);
+        betRound.update(score, gameId);
+        betRoundRepository.save(betRound);
+    }
+
 }

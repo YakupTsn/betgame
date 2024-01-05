@@ -11,6 +11,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Data
@@ -38,46 +39,54 @@ public class FootballGame extends GameAbstract {
         return footballGameList;
     }
 
-    public List<FootballGame> updateList(List<Score> scoreList, List<FootballGame> gameList) {
+    public List<FootballGame> updateList(Score score, String gameId, List<FootballGame> gameList) {
+        findById(gameList, gameId);
         for (FootballGame footballGame : gameList) {
-            for (Score score : scoreList) {
+            if (footballGame.getId().equals(gameId)) {
                 footballGame.setScore(score);
             }
         }
         return gameList;
     }
 
+    FootballGame findById(List<FootballGame> gameList, String gameId) {
+        Optional<FootballGame> gameOptional = gameList.stream().filter(game -> game.getId().equals(gameId)).findFirst();
+        if (gameOptional.isEmpty())
+            throw new NotFoundException(" Game not found");
+        return gameOptional.get();
+    }
+
     public List<FootballGame> updateListIsSuccess(List<FootballGame> betroundGameList, List<FootballGame> userBetRoundGameList) {
         for (FootballGame footballGameUserBetRound : userBetRoundGameList) {
             for (FootballGame footballGameBetRound : betroundGameList) {
-                checkGameSummary(footballGameBetRound, footballGameUserBetRound );
+                checkGameSummary(footballGameBetRound, footballGameUserBetRound);
             }
         }
         return userBetRoundGameList;
     }
 
     private void checkGameSummary(FootballGame serverGame, FootballGame userGame) {
-            if (serverGame.getId().equals(userGame.getServerId())) {
-                if (serverGame.getScore().equals(userGame.getScore())) {
-                    userGame.setIsSuccess(true);
-                } else {
-                    userGame.setIsSuccess(false);
-                }
+        if (serverGame.getId().equals(userGame.getServerId())) {
+            if (serverGame.getScore().equals(userGame.getScore())) {
+                userGame.setIsSuccess(true);
+            } else {
+                userGame.setIsSuccess(false);
             }
         }
-
-
-@Override
-protected void validate(BetRole betRole) {
-    checkPlayDate();
-    checkTeams();
-    if(betRole.equals(BetRole.USER)) {
-        checkGameServerId();
     }
-}
+
+
+    @Override
+    protected void validate(BetRole betRole) {
+        checkPlayDate();
+        checkTeams();
+        if (betRole.equals(BetRole.USER)) {
+            checkGameServerId();
+        }
+    }
 
     private void checkGameServerId() {
-        if(this.serverId.isEmpty()){
+        if (this.serverId.isEmpty()) {
             throw new NotFoundException("The bet to be placed is not registered in the system");
         }
     }

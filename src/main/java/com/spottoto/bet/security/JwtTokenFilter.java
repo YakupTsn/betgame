@@ -39,9 +39,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         final String authHeader = httpServletRequest.getHeader(HEADER_STRING);
 
-        if (authHeader == null){
-             return;
-      }
+        if (authHeader == null) {
+            return;
+        }
 
         if (!authHeader.startsWith(TOKEN_PREFIX)) {
             return;
@@ -62,15 +62,20 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse res, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
             throws IOException, ServletException {
+        res.setHeader("Access-Control-Allow-Origin", req.getHeader("Origin"));
+        res.setHeader("Access-Control-Allow-Credentials", "true");
+        res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+        res.setHeader("Access-Control-Max-Age", "3600");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, remember-me");
 
         try {
-            doWork(request, res);
+            doWork(req, res);
         } catch (Exception e) {
             e.getCause();
         }
 
-        chain.doFilter(request, res);
+        chain.doFilter(req, res);
     }
 }

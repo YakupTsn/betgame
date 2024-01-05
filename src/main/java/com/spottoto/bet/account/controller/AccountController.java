@@ -51,7 +51,7 @@ public class AccountController {
 
     @IsAuthentificated
     @Operation(
-            summary = "Who I Am ?",
+            summary = "Who Am I ?",
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))),
                     @ApiResponse(description = "UnAuthorized", responseCode = "401", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),

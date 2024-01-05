@@ -10,12 +10,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
+
 
 @Repository
 @EnableJpaRepositories
 public interface BetRoundRepository extends JpaRepository<BetRound, Long> {
-    Optional<BetRound> findByServerBetRoundId(Long serverBetRoundId);
 
     List<BetRound> findByServerBetRoundIdAndBetRole(Long serverBetRoundId, BetRole betRole);
 

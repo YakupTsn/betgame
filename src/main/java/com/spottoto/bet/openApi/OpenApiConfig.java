@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.servers.Server;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -26,16 +25,6 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 ),
                 termsOfService = "Terms of service"
         ),
-        servers = {
-                @Server(
-                        description = "Local ENV",
-                        url = "http://localhost:8080"
-                ),
-                @Server(
-                        description = "PROD ENV",
-                        url = ""
-                )
-        },
         security = {
                 @SecurityRequirement(
                         name = "bearerAuth"
