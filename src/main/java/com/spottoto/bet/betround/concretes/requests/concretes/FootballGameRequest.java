@@ -3,12 +3,14 @@ package com.spottoto.bet.betround.concretes.requests.concretes;
 
 import com.spottoto.bet.betround.concretes.requests.GameRequestAbstract;
 import com.spottoto.bet.betround.enums.Score;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class FootballGameRequest extends GameRequestAbstract {
     private String serverId;
     private String firstTeamName;

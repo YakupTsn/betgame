@@ -41,8 +41,9 @@ public class AccountController {
             summary = "User login.",
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))),
+                    @ApiResponse(description = "BadRequest", responseCode = "400", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
                     @ApiResponse(description = "UnAuthorized", responseCode = "401", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
-                    @ApiResponse(description = "Forbidden", responseCode = "403", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(description = "NotFound", responseCode = "404", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
             })
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> login(@RequestBody @Valid LoginRequest request) {
@@ -66,7 +67,7 @@ public class AccountController {
             summary = "Forgot your password?",
             responses = {
                     @ApiResponse(description = "Success", responseCode = "200", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDto.class))),
-                    @ApiResponse(description = "UnAuthorized", responseCode = "401", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(description = "NotFound", responseCode = "404", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
             })
     @PutMapping("/forgotpassword")
     @ResponseStatus(HttpStatus.OK)

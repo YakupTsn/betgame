@@ -3,12 +3,12 @@ package com.spottoto.bet.exceptions;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-public class ForbiddenMailException extends RestException{
+public class NotFoundMailException extends RestException{
     @Getter
     private final HttpStatus httpStatus;
 
-    public ForbiddenMailException(String message) {
+    public NotFoundMailException(String message) {
         super(message);
-        this.httpStatus = HttpStatus.FORBIDDEN;
+        this.httpStatus = HttpStatus.NOT_FOUND;
     }
 }

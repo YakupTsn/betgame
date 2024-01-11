@@ -3,7 +3,8 @@ package com.spottoto.bet.account.service;
 
 import com.spottoto.bet.account.controller.request.LoginRequest;
 import com.spottoto.bet.account.controller.request.RegisterRequest;
-import com.spottoto.bet.exceptions.ForbiddenMailException;
+import com.spottoto.bet.exceptions.NotFoundMailException;
+import com.spottoto.bet.exceptions.UnAuthorizedException;
 import com.spottoto.bet.exceptions.UserMailExistsException;
 import com.spottoto.bet.mail.MailService;
 import com.spottoto.bet.mapper.ModelMapperManager;
@@ -49,11 +50,17 @@ public class AccountManager implements AccountService {
 
     @Override
     public ResponseEntity<String> login(LoginRequest request) {
+        requestControl(request);
         patternMatches(request.getMail());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getMail(),
                         request.getPassword()));
         return ResponseEntity.ok(tokenManager.generateToken(request.getMail()));
+    }
+
+    private void requestControl(LoginRequest request) {
+        if(request.getMail().isEmpty() && request.getPassword().isEmpty())
+            throw new UnAuthorizedException("Email and password cannot be left blank");
     }
 
     @Override
@@ -65,7 +72,7 @@ public class AccountManager implements AccountService {
     @Override
     public String putPassword(String mail) {
         User user = userRepository.findByMail(mail).orElseThrow(
-                () -> new ForbiddenMailException(mail + " This mailing address does not exist")
+                () -> new NotFoundMailException(mail + " This mailing address does not exist")
         );
         Random randomPassword = new Random();
         String newPassword = randomPassword.nextDouble(10) + "";
@@ -74,6 +81,7 @@ public class AccountManager implements AccountService {
         user.setUpdateDt(LocalDateTime.now());
         userRepository.save(user);
         return mailService.sendMailPassword(user.getPassword(), user.getMail());
+       // return "Ok";
     }
 
 }
