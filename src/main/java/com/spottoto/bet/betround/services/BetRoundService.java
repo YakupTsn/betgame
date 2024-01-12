@@ -9,6 +9,7 @@ import com.spottoto.bet.betround.enums.Score;
 import com.spottoto.bet.betround.repositories.BetRoundRepository;
 import com.spottoto.bet.exceptions.NotFoundException;
 import com.spottoto.bet.exceptions.RestException;
+import com.spottoto.bet.exceptions.UserNotFoundException;
 import com.spottoto.bet.mail.MailManager;
 import com.spottoto.bet.security.SecurityContextUtil;
 import com.spottoto.bet.user.entity.User;
@@ -60,7 +61,7 @@ public class BetRoundService {
             throw new RestException(serverBetRoundId+" bet round server available");
         }
     }
-    private BetRound findOneBetRoundByServerBetRoundId(Long serverBetRoundId) {
+    public BetRound findOneBetRoundByServerBetRoundId(Long serverBetRoundId) {
         List<BetRound> betRound = betRoundRepository.findByServerBetRoundIdAndBetRole(serverBetRoundId, BetRole.SERVER);
         if (betRound.isEmpty())
             throw new NotFoundException("Bet round id : "+ serverBetRoundId + " is not found");
@@ -72,12 +73,13 @@ public class BetRoundService {
     }
 
     public void saveBetRoundIsSuccessAndSendMail(Long betRoundId) {
-        BetRound betRound = betRoundRepository.findById(betRoundId).orElseThrow();
+        BetRound betRound = findOneBetRoundByServerBetRoundId(betRoundId);
         BetRound newBetRound = new BetRound();
         List<BetRound> userBetRoundList = findBetRoundsByServerBetRoundId(betRound.getServerBetRoundId());
         List<BetRound> userBetRoundListNew = newBetRound.updateIsSuccess(betRound, userBetRoundList);
-        changeBetStatus(betRound);
         betRoundRepository.saveAll(userBetRoundListNew);
+        betRoundRepository.save(betRound);
+         changeBetStatus(betRound);
         isSuccesSendMail(userBetRoundListNew);
     }
 
@@ -93,12 +95,12 @@ public class BetRoundService {
             changeBetStatus(userBetRound);
             betRoundRepository.save(userBetRound);
             String result = "Your cupon: " + userBetRound.getGameList().toString() + "Cupon Result " + userBetRound.getBetStatus();
-            mailManager.couponResult(mail, result);
+           // mailManager.couponResult(mail, result);
         }
     }
 
     private String findUserByOwnerId(BetRound userBetRound) {
-        User user = userRepository.findById(userBetRound.getOwnerId()).orElseThrow();
+        User user = userRepository.findById(userBetRound.getOwnerId()).orElseThrow(()-> new UserNotFoundException("User not found"));
         return user.getMail();
     }
 

@@ -37,7 +37,7 @@ public class SaveBetRoundTest {
         List<FootballGameRequest> gameList = getAdminGameList();
 
         return BetRoundRequest.builder()
-                .serverBetRoundId(5L)
+                .serverBetRoundId(6L)
                 .betRole(BetRole.SERVER)
                 .gameList(gameList)
                 .build();
@@ -61,10 +61,6 @@ public class SaveBetRoundTest {
 
     public String getToken() {
         return tokenManager.generateToken("admin@admin.gmail.com");
-    }
-
-    public String getTokenUser() {
-        return tokenManager.generateToken("user@user.gmail.com");
     }
 
     @Test

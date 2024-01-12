@@ -48,7 +48,7 @@ public class BetRound implements Playable {
     public void checkGamesDatesToChangePlayableStatus(PlayableStatus playableStatus) {
         Boolean isInvalidGameDate = gameList.stream().anyMatch(game -> game.getPlayDate().isAfter(LocalDateTime.now()));
         if (playableStatus.equals(PlayableStatus.ENDED)) {
-            if (isInvalidGameDate)
+            if (!isInvalidGameDate)
                 throw new RestException("There are still games being played");
         } else {
             isInvalidGameDate = gameList.stream().anyMatch(game -> game.getPlayDate().isBefore(LocalDateTime.now()));
@@ -126,16 +126,19 @@ public class BetRound implements Playable {
     }
 
     public void updateBetStatus() {
-        if (betRole.equals(BetRole.SERVER))
+        if (betRole.equals(BetRole.SERVER)){
             betStatus = BetStatus.FINISH;
-        Boolean status = gameList.stream().anyMatch(game -> game.isSuccess().equals(Boolean.FALSE));
-        if (status) {
-            betStatus = BetStatus.FAILED;
-            this.isSuccess();
-        } else {
-            betStatus = BetStatus.SUCCESS;
-            this.isSuccess();
+        }else {
+            Boolean status = gameList.stream().anyMatch(game -> game.isSuccess().equals(Boolean.FALSE));
+            if (status) {
+                betStatus = BetStatus.FAILED;
+                this.isSuccess();
+            } else {
+                betStatus = BetStatus.SUCCESS;
+                this.isSuccess();
+            }
+
         }
 
+        }
     }
-}

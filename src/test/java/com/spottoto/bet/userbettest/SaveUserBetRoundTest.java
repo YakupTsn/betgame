@@ -1,8 +1,11 @@
 package com.spottoto.bet.userbettest;
 
+import com.spottoto.bet.betround.concretes.BetRound;
 import com.spottoto.bet.betround.concretes.requests.concretes.BetRoundRequest;
 import com.spottoto.bet.betround.concretes.requests.concretes.FootballGameRequest;
 import com.spottoto.bet.betround.enums.BetRole;
+import com.spottoto.bet.betround.enums.Score;
+import com.spottoto.bet.betround.services.BetRoundService;
 import com.spottoto.bet.security.TokenManager;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -25,6 +28,8 @@ import java.util.Locale;
 public class SaveUserBetRoundTest {
     @Autowired
     private TokenManager tokenManager;
+    @Autowired
+    private BetRoundService betRoundService;
 
     @BeforeAll
     public static void beforeAll() {
@@ -33,17 +38,26 @@ public class SaveUserBetRoundTest {
 
     String pathSaveBetRound = "/betround";
 
-    public static BetRoundRequest getAdminReguest() {
+    public BetRoundRequest getAdminReguest() {
         List<FootballGameRequest> gameList = getAdminGameList();
 
         return BetRoundRequest.builder()
-                .serverBetRoundId(5L)
-                .betRole(BetRole.SERVER)
+                .serverBetRoundId(6L)
+                .betRole(BetRole.USER)
                 .gameList(gameList)
                 .build();
     }
 
-    public static List<FootballGameRequest> getAdminGameList() {
+    public List<String> getGameIdList(Long id) {
+        BetRound betRound = betRoundService.findOneBetRoundByServerBetRoundId(id);
+        List<String> gameIdList = new ArrayList<>();
+        for (int i = 0; i < 13; i++) {
+            gameIdList.add(betRound.getGameList().get(i).getId());
+        }
+        return gameIdList;
+    }
+
+    public List<FootballGameRequest> getAdminGameList() {
         List<FootballGameRequest> gameList = new ArrayList<>();
         LocalDateTime date = LocalDateTime.of(2024, 01, 13, 20, 46, 15);
         for (int i = 0; i < 13; i++) {
@@ -51,7 +65,8 @@ public class SaveUserBetRoundTest {
                     .firstTeamName("string")
                     .playDate(date)
                     .secondTeamName("string")
-                    .serverId("string")
+                    .score(Score.SECOND)
+                    .serverId(getGameIdList(6L).get(i))
                     .build();
             gameList.add(aw);
         }
@@ -59,9 +74,6 @@ public class SaveUserBetRoundTest {
         return gameList;
     }
 
-    public String getToken() {
-        return tokenManager.generateToken("admin@admin.gmail.com");
-    }
 
     public String getTokenUser() {
         return tokenManager.generateToken("user@user.gmail.com");
@@ -70,7 +82,7 @@ public class SaveUserBetRoundTest {
     @Test
     void saveBetRound201Test() {
         RestAssured.given().baseUri("http://localhost:8080")
-                .header("Authorization", "Bearer " + getToken())
+                .header("Authorization", "Bearer " + getTokenUser())
                 .contentType(ContentType.JSON)
                 .body(getAdminReguest()).post(pathSaveBetRound)
                 .then().statusCode(201);
@@ -79,7 +91,7 @@ public class SaveUserBetRoundTest {
     @Test
     void saveBetRound400Test() {
         RestAssured.given().baseUri("http://localhost:8080")
-                .header("Authorization", "Bearer " + getToken())
+                .header("Authorization", "Bearer " + getTokenUser())
                 .contentType(ContentType.JSON)
                 .body("").post(pathSaveBetRound)
                 .then().statusCode(400);
