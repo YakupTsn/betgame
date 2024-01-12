@@ -1,8 +1,5 @@
 package com.spottoto.bet.serverbettest;
 
-import com.spottoto.bet.betround.concretes.BetRound;
-import com.spottoto.bet.betround.enums.Score;
-import com.spottoto.bet.betround.services.BetRoundService;
 import com.spottoto.bet.security.TokenManager;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -14,8 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 @ExtendWith(SpringExtension.class)
@@ -38,6 +33,8 @@ public class SaveBetRoundIsSuccessAndSendMailTest {
     public String getTokenUser() {
         return tokenManager.generateToken("user@user.gmail.com");
     }
+
+    //betRoundId equals to serverBetRoundId
 
     @Test
     void saveGameResult400Test() {

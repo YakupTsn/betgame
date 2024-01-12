@@ -95,7 +95,7 @@ public class BetRoundService {
             changeBetStatus(userBetRound);
             betRoundRepository.save(userBetRound);
             String result = "Your cupon: " + userBetRound.getGameList().toString() + "Cupon Result " + userBetRound.getBetStatus();
-           // mailManager.couponResult(mail, result);
+            mailManager.couponResult(mail, result);
         }
     }
 

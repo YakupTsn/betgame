@@ -81,7 +81,6 @@ public class AccountManager implements AccountService {
         user.setUpdateDt(LocalDateTime.now());
         userRepository.save(user);
         return mailService.sendMailPassword(user.getPassword(), user.getMail());
-       // return "Ok";
     }
 
 }
